@@ -8,6 +8,7 @@ function Bookmobile() {
     name: "",
     email: ""
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,19 +16,31 @@ function Bookmobile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    const response = await fetch("https://mobileweb-backend.onrender.com/bookmobile", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    });
+    try {
+      const response = await fetch(
+        "https://mobileweb-backend-1.onrender.com/bookmobile",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        }
+      );
 
-    if (response.ok) {
-      alert("Booking saved successfully!");
-      setShowForm(false);
-      setFormData({ model: "", name: "", email: "" });
-    } else {
-      alert("Error saving booking.");
+      if (response.ok) {
+        const result = await response.json();
+        alert("Booking saved successfully! ID: " + result.data[0].id);
+        setShowForm(false);
+        setFormData({ model: "", name: "", email: "" });
+      } else {
+        const err = await response.json();
+        alert("Error saving booking: " + err.error);
+      }
+    } catch (error) {
+      alert("Network error: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,7 +79,9 @@ function Bookmobile() {
               required
             />
             <div className="form-buttons">
-              <button type="submit">Submit</button>
+              <button type="submit" disabled={loading}>
+                {loading ? "Submitting..." : "Submit"}
+              </button>
               <button
                 type="button"
                 className="close-btn"
