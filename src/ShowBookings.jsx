@@ -7,7 +7,7 @@ function ShowBookings() {
   const [show, setShow] = useState(false);
 
   const fetchBookings = async () => {
-    const response = await fetch("http://localhost:5000/bookings");
+    const response = await fetch("https://mobileweb-backend-1.onrender.com/bookings");
     if (response.ok) {
       const data = await response.json();
       setBookings(data);
